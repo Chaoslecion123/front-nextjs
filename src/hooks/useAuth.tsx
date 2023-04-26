@@ -15,7 +15,7 @@ export const useAuth = () => {
 };
 
 function useProvideAuth() {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState({});
 
   const signIn = async (code: any, username: any, password: any) => {
     const options = {
@@ -31,7 +31,6 @@ function useProvideAuth() {
       options
     );
     if (data?.access_token) {
-      const token = data.access_token;
       Cookie.set("token", JSON.stringify(data), { expires: 5 });
       setUser({
         user: data?.user,

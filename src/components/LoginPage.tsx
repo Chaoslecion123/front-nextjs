@@ -20,11 +20,9 @@ const LoginPage = () => {
     auth
       .signIn(code, username, password)
       .then((res: any) => {
-        console.log(res);
         router.push("/dashboard");
       })
       .catch((err: any) => {
-        console.log("error login", err);
         setErrorText("Datos vacios o erroneos");
       });
   };
