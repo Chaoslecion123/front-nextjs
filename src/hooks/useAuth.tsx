@@ -15,7 +15,7 @@ export const useAuth = () => {
 };
 
 function useProvideAuth() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState<any>();
 
   const signIn = async (code: any, username: any, password: any) => {
     const options = {

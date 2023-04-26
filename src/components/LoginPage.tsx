@@ -1,17 +1,17 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/router";
-import React, { useRef, useState } from "react";
+import React, { FormEventHandler, useRef, useState } from "react";
 import { Alerts } from "./Alerts";
 
 const LoginPage = () => {
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const codeRef = useRef<HTMLInputElement>(null);
-  const [errorText, setErrorText] = useState(null);
-  const auth = useAuth();
+  const [errorText, setErrorText] = useState("");
+  const auth: any = useAuth();
   const router = useRouter();
 
-  const submitHandler = (event: Event) => {
+  const submitHandler = (event: any) => {
     event.preventDefault();
     const code = codeRef?.current?.value;
     const username = usernameRef?.current?.value;
@@ -27,10 +27,12 @@ const LoginPage = () => {
       });
   };
 
+  console.log("errorText", errorText);
+
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        {errorText && (
+        {errorText.length > 0 && (
           <Alerts setErrorText={setErrorText} errorText={errorText} />
         )}
 

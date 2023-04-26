@@ -8,14 +8,16 @@ import { getUserLocation } from "@/utils/getUserLocation";
 import { OptionsHeaders } from "@/utils/headers";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Image from "next/image";
 import React, { useEffect, useReducer, useState } from "react";
+import avantarImg from "../../static/avatar.png";
 
 const Dashboard = () => {
   const [listClients, setListClients] = useState([]);
   const [showModal, setShowModal] = React.useState(false);
 
   const tokenData = Cookies.get("token")
-    ? JSON.parse(Cookies.get("token"))
+    ? JSON.parse(Cookies.get("token") as string)
     : undefined;
 
   const products = [
@@ -94,10 +96,12 @@ const Dashboard = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
-                            <img
+                            <Image
                               className="h-10 w-10 rounded-full"
-                              src={products[0].images}
-                              alt=""
+                              src={avantarImg}
+                              alt="imagen"
+                              width={500}
+                              height={500}
                             />
                           </div>
                           <div className="ml-4">

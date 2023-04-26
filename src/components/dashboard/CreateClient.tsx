@@ -19,7 +19,7 @@ const CreateClient = (props: any) => {
   const submitHandler = async (e: Event) => {
     e.preventDefault();
     const tokenData = Cookies.get("token")
-      ? JSON.parse(Cookies.get("token"))
+      ? JSON.parse(Cookies.get("token") as string)
       : undefined;
 
     const { data } = await axios.post(endPoints.dashboard.clients.add, {
