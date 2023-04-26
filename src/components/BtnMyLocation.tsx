@@ -29,7 +29,7 @@ export const BtnMyLocation = () => {
   const handlerRegisterCoordenate = async () => {
     console.log("userLocation", userLocation);
     const tokenData = Cookies.get("token")
-      ? JSON.parse(Cookies.get("token"))
+      ? JSON.parse(Cookies.get("token") as string)
       : undefined;
 
     console.log("tokenData?.code", String(tokenData?.code));

@@ -24,7 +24,7 @@ export const PlacesProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(placesReducer, INITIAL_STATE);
 
   const tokenData = Cookies.get("token")
-    ? JSON.parse(Cookies.get("token"))
+    ? JSON.parse(Cookies.get("token") as string)
     : undefined;
 
   useEffect(() => {
