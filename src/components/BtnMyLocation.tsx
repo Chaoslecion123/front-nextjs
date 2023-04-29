@@ -10,6 +10,10 @@ export const BtnMyLocation = () => {
   const { userLocation } = useContext(PlacesContext);
   const [isCreated, setCreated] = useState(false);
 
+  const tokenData = Cookies.get("token")
+    ? JSON.parse(Cookies.get("token") as string)
+    : undefined;
+
   const onClick = () => {
     if (!isMapReady) throw new Error("Mapa no esta lista");
     if (!userLocation) throw new Error("No hay ubicacion del usuario");
@@ -21,20 +25,18 @@ export const BtnMyLocation = () => {
   };
 
   useEffect(() => {
-    axios
-      .get(endPoints.dashboard.coordenates.list)
-      .then((e) => setCreated(e.data?.results?.length != 0 ? true : false));
+    axios.get(endPoints.dashboard.coordenates.list).then((e) => {
+      const findCode = e.data?.results.find(
+        (e: any) => e.code_id.code === tokenData?.code
+      );
+      setCreated(!!findCode);
+    });
   }, []);
 
   const handlerRegisterCoordenate = async () => {
-    console.log("userLocation", userLocation);
-    const tokenData = Cookies.get("token")
-      ? JSON.parse(Cookies.get("token") as string)
-      : undefined;
-
-    console.log("tokenData?.code", String(tokenData?.code));
-    console.log("userLocation?.[0]", String(userLocation?.[0]));
-    console.log("userLocation?.[1]", String(userLocation?.[1]));
+    // const tokenData = Cookies.get("token")
+    //   ? JSON.parse(Cookies.get("token") as string)
+    //   : undefined;
 
     const data = await axios.post(endPoints.dashboard.coordenates.add, {
       longitude: userLocation?.[0],
