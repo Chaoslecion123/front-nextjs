@@ -12,7 +12,7 @@ export const BtnMyLocation = () => {
   const { userLocation } = useContext(PlacesContext);
   const [isCreated, setCreated] = useState(false);
 
-  const { data: dataSession } = useSession();
+  const { data: dataSession }: any = useSession();
 
   const onClick = () => {
     if (!isMapReady) throw new Error("Mapa no esta lista");
@@ -25,7 +25,6 @@ export const BtnMyLocation = () => {
   };
 
   useEffect(() => {
-    console.log("ataSession?.user?.code", dataSession?.user?.code);
     axios.get(endPoints.dashboard.coordenates.list).then((e) => {
       const findCode = e.data?.results.find(
         (e: any) => e.code_id.code === dataSession?.user?.code

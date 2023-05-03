@@ -195,9 +195,13 @@ const Dashboard = () => {
 };
 
 export async function getServerSideProps(context: any) {
-  const session = await getServerSession(context.req, context.res, Nextauth);
+  const session: any = await getServerSession(
+    context.req,
+    context.res,
+    Nextauth
+  );
 
-  if (!session) {
+  if (session?.user.name === undefined || !session) {
     return {
       redirect: {
         destination: "/auth/login",

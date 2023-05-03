@@ -1,31 +1,23 @@
-import React, { FormEventHandler, useEffect, useRef, useState } from "react";
-import { signIn, getSession, getProviders, useSession } from "next-auth/react";
-import { authOptions } from "/src/pages/api/auth/[...nextauth]";
-import { getServerSession } from "next-auth/next";
-import { useAuth } from "@/hooks/useAuth";
+import React, { useEffect, useRef, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { Alerts } from "./Alerts";
-import { redirect } from "next/dist/server/api-utils";
-import { GetServerSideProps } from "next";
-import Nextauth from "@/pages/api/auth/[...nextauth]";
 
 const LoginPage = () => {
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const codeRef = useRef<HTMLInputElement>(null);
   const [errorText, setErrorText] = useState("");
-  const auth: any = useAuth();
   const router = useRouter();
+
+  const code = codeRef?.current?.value;
+  const username = usernameRef?.current?.value;
+  const password = passwordRef?.current?.value;
 
   const { data: dataSession }: any = useSession();
 
-  // console.log("dataSession --->", dataSession);
-
   const submitHandler = async (event: any) => {
     event.preventDefault();
-    const code = codeRef?.current?.value;
-    const username = usernameRef?.current?.value;
-    const password = passwordRef?.current?.value;
 
     await signIn("credentials", {
       code,
@@ -33,27 +25,15 @@ const LoginPage = () => {
       password,
       redirect: false,
     });
-
-    // console.log("dataSession", dataSession);
-
-    // if (dataSession?.user?.error) {
-    //   setErrorText(dataSession?.user?.error);
-    //   // return;
-    // }
-    // router.push("/dashboard");
-
-    // if (dataSession?.user?.accessToken) {
-    //   router.push("/dashboard");
-    // } else {
-    //   setErrorText("Datos incorrectos");
-    // }
   };
 
+  console.log("dataSession", dataSession);
+
   useEffect(() => {
-    console.log("dataSession", dataSession);
-    if (dataSession?.user?.error) {
+    if (dataSession?.user?.error && (code || username || password)) {
       setErrorText(dataSession?.user?.error);
-    } else {
+    }
+    if (dataSession?.accessToken) {
       router.push("/dashboard");
     }
   }, [dataSession]);

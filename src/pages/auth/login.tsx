@@ -4,25 +4,29 @@ import { getServerSession } from "next-auth";
 
 const Login = () => <LoginPage />;
 
-export async function getServerSideProps(context: any) {
-  const session = await getServerSession(context.req, context.res, Nextauth);
+// export async function getServerSideProps(context: any) {
+//   const session: any = await getServerSession(
+//     context.req,
+//     context.res,
+//     Nextauth
+//   );
 
-  console.log("session login", session);
+//   console.log("session login", session?.user?.name);
 
-  if (session) {
-    return {
-      redirect: {
-        destination: "/dashboard",
-        permanent: false,
-      },
-    };
-  }
+//   if (session?.user?.name !== undefined) {
+//     return {
+//       redirect: {
+//         destination: "/dashboard",
+//         permanent: false,
+//       },
+//     };
+//   }
 
-  return {
-    props: {
-      session,
-    },
-  };
-}
+//   return {
+//     props: {
+//       session: JSON.parse(JSON.stringify(session)),
+//     },
+//   };
+// }
 
 export default Login;

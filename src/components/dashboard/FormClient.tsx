@@ -9,11 +9,11 @@ import ErrorList from "../ErrorList";
 
 const FormClient = (props: any) => {
   const { setShowModal, dataClient, setDataClient } = props;
-  const formRef = useRef<HTMLFormElement>();
-  const [listErrors, setListErrors] = useState(null);
+  const formRef = useRef<any>();
+  const [listErrors, setListErrors] = useState<any>(null);
   const router = useRouter();
 
-  const { data: dataSession } = useSession();
+  const { data: dataSession }: any = useSession();
 
   // const first_name = useRef<HTMLInputElement>(null);
   // const lastName = useRef<HTMLInputElement>(null);
@@ -22,7 +22,7 @@ const FormClient = (props: any) => {
   // const addresses = useRef<HTMLInputElement>(null);
   // const opticalPower = useRef<HTMLInputElement>(null);
 
-  const submitHandler = async (e: Event) => {
+  const submitHandler = async (e: any) => {
     e.preventDefault();
     console.log("formRef.current", formRef);
 

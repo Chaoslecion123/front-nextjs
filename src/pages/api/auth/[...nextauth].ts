@@ -19,8 +19,7 @@ export default NextAuth({
         },
         password: { label: "Codigo", type: "password", placeholder: "*******" },
       },
-      async authorize(credentials) {
-        console.log("HOLAAAAAAAAAAA");
+      async authorize(credentials): Promise<any> {
         try {
           const { data }: any = await axios.post(
             endPoints.auth.login,
@@ -32,10 +31,6 @@ export default NextAuth({
             OptionsHeaders
           );
 
-          console.log("--- --- ---");
-          console.log("data", data);
-          console.log("--- --- ---");
-
           return {
             id: data.id,
             name: data.user.username,
@@ -45,7 +40,6 @@ export default NextAuth({
             idCoordenadas: data.id_coordenada,
           };
         } catch (error: any) {
-          console.log("error", error.response.data);
           return {
             error: "Datos incorrectos",
           };
@@ -79,15 +73,10 @@ export default NextAuth({
       return token;
     },
     async session({ session, token, user }: any) {
-      // console.log({ session, token, user });
-
       session.accessToken = token.user.accessToken;
       session.user = token.user as any;
 
       return session;
     },
-    // async redirect({ url, baseUrl }: any) {
-    //   return "http://localhost:9000/dashboard";
-    // },
   },
 });
