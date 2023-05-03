@@ -1,3 +1,4 @@
+import { SessionProvider } from "next-auth/react";
 import { PlacesProvider } from "@/context";
 import { ProviderAuth } from "@/hooks/useAuth";
 import "@/styles/globals.css";
@@ -10,7 +11,10 @@ import { MapProvider } from "@/context/map/MapProvider";
 mapboxgl.accessToken =
   "pk.eyJ1IjoiY2hhb3NsZWNpb243MSIsImEiOiJjbGd2aDA2bTEwM29zM2lwczBsdjd4MjB5In0.HtbXtHcdZt0gtyzWJ3f00g";
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   if (typeof window !== "undefined") {
     if (!navigator.geolocation) {
       alert("Tu navegador no tiene opción de Geolocation");
@@ -19,7 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
   }
 
   return (
-    <>
+    <SessionProvider session={session}>
       <ProviderAuth>
         <PlacesProvider>
           <MapProvider>
@@ -27,6 +31,6 @@ export default function App({ Component, pageProps }: AppProps) {
           </MapProvider>
         </PlacesProvider>
       </ProviderAuth>
-    </>
+    </SessionProvider>
   );
 }

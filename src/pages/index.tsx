@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <button
-        onClick={() => router.push("/login")}
+        onClick={() => router.push("/auth/login")}
         className="bg-orange-200 p-4 rounded-md"
       >
         Login

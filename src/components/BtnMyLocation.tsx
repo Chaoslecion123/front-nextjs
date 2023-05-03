@@ -1,8 +1,10 @@
 import { PlacesContext } from "@/context";
+import { useSession } from "next-auth/react";
 import { MapContext } from "@/context/map/MapContext";
 import endPoints from "@/services/api";
 import axios from "axios";
 import Cookies from "js-cookie";
+
 import { useContext, useEffect, useState } from "react";
 
 export const BtnMyLocation = () => {
@@ -10,9 +12,7 @@ export const BtnMyLocation = () => {
   const { userLocation } = useContext(PlacesContext);
   const [isCreated, setCreated] = useState(false);
 
-  const tokenData = Cookies.get("token")
-    ? JSON.parse(Cookies.get("token") as string)
-    : undefined;
+  const { data: dataSession } = useSession();
 
   const onClick = () => {
     if (!isMapReady) throw new Error("Mapa no esta lista");
@@ -25,42 +25,38 @@ export const BtnMyLocation = () => {
   };
 
   useEffect(() => {
+    console.log("ataSession?.user?.code", dataSession?.user?.code);
     axios.get(endPoints.dashboard.coordenates.list).then((e) => {
       const findCode = e.data?.results.find(
-        (e: any) => e.code_id.code === tokenData?.code
+        (e: any) => e.code_id.code === dataSession?.user?.code
       );
+      console.log("findCode", findCode);
       setCreated(!!findCode);
     });
-  }, []);
+  }, [dataSession?.user?.code]);
 
   const handlerRegisterCoordenate = async () => {
-    // const tokenData = Cookies.get("token")
-    //   ? JSON.parse(Cookies.get("token") as string)
-    //   : undefined;
-
     const data = await axios.post(endPoints.dashboard.coordenates.add, {
       longitude: userLocation?.[0],
       latitude: userLocation?.[1],
       code_id: {
-        code: tokenData?.code,
+        code: dataSession?.user?.code,
       },
     });
     setCreated(!!data?.status);
   };
 
-  console.log("isCreated", isCreated);
-
   return (
-    <div className="flex">
+    <div className="bg-slate-500">
       {!isCreated && (
         <button
           className={"flex-initial  bg-emerald-500"}
-          disabled={isCreated}
+          // disabled={isCreated}
           onClick={handlerRegisterCoordenate}
           style={{
-            position: "fixed",
-            top: "120px",
-            right: "150px",
+            // position: "fixed",
+            // top: "120px",
+            // right: "150px",
             zIndex: 999,
             //   background: "blue",
             border: "10px",
@@ -77,9 +73,9 @@ export const BtnMyLocation = () => {
         className="flex-initial"
         onClick={onClick}
         style={{
-          position: "fixed",
-          top: "120px",
-          right: "20px",
+          // position: "fixed",
+          // top: "120px",
+          // right: "20px",
           zIndex: 999,
           background: "blue",
           border: "10px",

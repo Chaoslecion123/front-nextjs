@@ -8,6 +8,7 @@ const endPoints = {
     clients: {
       add: `${API}/clients/`,
       list: `${API}/clients/`,
+      update: (id: any) => `${API}/clients/${id}/`,
     },
     coordenates: {
       add: `${API}/coordenadas/`,

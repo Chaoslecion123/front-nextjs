@@ -1,7 +1,13 @@
+import React, { FormEventHandler, useEffect, useRef, useState } from "react";
+import { signIn, getSession, getProviders, useSession } from "next-auth/react";
+import { authOptions } from "/src/pages/api/auth/[...nextauth]";
+import { getServerSession } from "next-auth/next";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/router";
-import React, { FormEventHandler, useRef, useState } from "react";
 import { Alerts } from "./Alerts";
+import { redirect } from "next/dist/server/api-utils";
+import { GetServerSideProps } from "next";
+import Nextauth from "@/pages/api/auth/[...nextauth]";
 
 const LoginPage = () => {
   const usernameRef = useRef<HTMLInputElement>(null);
@@ -11,23 +17,46 @@ const LoginPage = () => {
   const auth: any = useAuth();
   const router = useRouter();
 
-  const submitHandler = (event: any) => {
+  const { data: dataSession }: any = useSession();
+
+  // console.log("dataSession --->", dataSession);
+
+  const submitHandler = async (event: any) => {
     event.preventDefault();
     const code = codeRef?.current?.value;
     const username = usernameRef?.current?.value;
     const password = passwordRef?.current?.value;
 
-    auth
-      .signIn(code, username, password)
-      .then((res: any) => {
-        router.push("/dashboard");
-      })
-      .catch((err: any) => {
-        setErrorText("Datos vacios o erroneos");
-      });
+    await signIn("credentials", {
+      code,
+      username,
+      password,
+      redirect: false,
+    });
+
+    // console.log("dataSession", dataSession);
+
+    // if (dataSession?.user?.error) {
+    //   setErrorText(dataSession?.user?.error);
+    //   // return;
+    // }
+    // router.push("/dashboard");
+
+    // if (dataSession?.user?.accessToken) {
+    //   router.push("/dashboard");
+    // } else {
+    //   setErrorText("Datos incorrectos");
+    // }
   };
 
-  console.log("errorText", errorText);
+  useEffect(() => {
+    console.log("dataSession", dataSession);
+    if (dataSession?.user?.error) {
+      setErrorText(dataSession?.user?.error);
+    } else {
+      router.push("/dashboard");
+    }
+  }, [dataSession]);
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">

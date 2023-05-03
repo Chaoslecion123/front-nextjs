@@ -1,6 +1,6 @@
 import { PlacesContext } from "@/context";
 import { MapContext } from "@/context/map/MapContext";
-import { Map } from "mapbox-gl";
+import { Map, Popup } from "mapbox-gl";
 import React, { useContext, useEffect, useRef } from "react";
 
 const MapView = () => {

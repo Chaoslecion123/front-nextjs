@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useState } from "react";
+import { useSession } from "next-auth/react";
 import { PlacesContext } from "./PlacesContext";
 import { placesReducer } from "./placesReducer";
 import { getUserLocation } from "@/utils/getUserLocation";
@@ -23,14 +24,11 @@ interface Props {
 export const PlacesProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(placesReducer, INITIAL_STATE);
 
-  const tokenData = Cookies.get("token")
-    ? JSON.parse(Cookies.get("token") as string)
-    : undefined;
+  const { data: dataSession }: any = useSession();
 
   useEffect(() => {
     // if (tokenData !== undefined) {
-    console.log("tokenData", tokenData);
-    if (tokenData?.id_coordenada === null) {
+    if (dataSession?.user?.idCoordenadas === null) {
       getUserLocation().then((res) => {
         console.log("res", res);
         dispatch({
@@ -39,9 +37,9 @@ export const PlacesProvider = ({ children }: Props) => {
         });
       });
     }
-    if (tokenData?.id_coordenada != null) {
+    if (dataSession?.user?.idCoordenadas != null) {
       const result = axios.get(
-        endPoints.dashboard.coordenates.get(tokenData.id_coordenada)
+        endPoints.dashboard.coordenates.get(dataSession?.user?.idCoordenadas)
       );
       result
         .then((res: any) => {
@@ -78,7 +76,7 @@ export const PlacesProvider = ({ children }: Props) => {
     //     })
     //     .catch((err) => console.log(err));
     // }
-  }, [tokenData?.id_coordenada]);
+  }, [dataSession?.user?.idCoordenadas]);
 
   return (
     <PlacesContext.Provider value={{ ...state }}>

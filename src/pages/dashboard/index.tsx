@@ -1,24 +1,25 @@
 import { BtnMyLocation } from "@/components/BtnMyLocation";
+import { useSession } from "next-auth/react";
+
 import { Header } from "@/components/Header";
 import MapView from "@/components/MapView";
 import Modal from "@/components/Modal";
-import CreateClient from "@/components/dashboard/CreateClient";
+import FormClient from "@/components/dashboard/FormClient";
 import endPoints from "@/services/api";
-import { getUserLocation } from "@/utils/getUserLocation";
 import { OptionsHeaders } from "@/utils/headers";
 import axios from "axios";
-import Cookies from "js-cookie";
 import Image from "next/image";
 import React, { useEffect, useReducer, useState } from "react";
 import avantarImg from "../../static/avatar.png";
+import Nextauth from "../api/auth/[...nextauth]";
+import { getServerSession } from "next-auth";
 
 const Dashboard = () => {
   const [listClients, setListClients] = useState([]);
   const [showModal, setShowModal] = React.useState(false);
+  const [dataClient, setDataClient] = useState(null);
 
-  const tokenData = Cookies.get("token")
-    ? JSON.parse(Cookies.get("token") as string)
-    : undefined;
+  const { data: dataSession } = useSession();
 
   const products = [
     {
@@ -28,8 +29,6 @@ const Dashboard = () => {
     },
   ];
 
-  console.log("tokenData dashboard", tokenData?.user.username);
-
   useEffect(() => {
     axios
       .get(endPoints.dashboard.clients.list, OptionsHeaders)
@@ -37,17 +36,26 @@ const Dashboard = () => {
       .catch((error: Error) => console.log(error));
   }, []);
 
+  const editClient = async (client: any) => {
+    setShowModal(true);
+    setDataClient(client);
+  };
+
   return (
     <>
       {" "}
       <div className="flex flex-col">
-        <Header username={tokenData?.user.username} />
+        <Header username={dataSession?.user?.name} />
         <Modal
           setShowModal={setShowModal}
           showModal={showModal}
           name="Crear Cliente"
         >
-          <CreateClient setShowModal={setShowModal} />
+          <FormClient
+            dataClient={dataClient}
+            setDataClient={setDataClient}
+            setShowModal={setShowModal}
+          />
         </Modal>
 
         <MapView />
@@ -58,6 +66,12 @@ const Dashboard = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      id
+                    </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -82,19 +96,42 @@ const Dashboard = () => {
                     >
                       Direccion
                     </th>
-                    <th scope="col" className="relative px-6 py-3">
-                      <span className="sr-only">Edit</span>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Potencia optico
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Nombre del Tecnico
                     </th>
                     <th scope="col" className="relative px-6 py-3">
+                      <span className="sr-only">Editar</span>
+                    </th>
+                    {/* <th scope="col" className="relative px-6 py-3">
                       <span className="sr-only">Delete</span>
-                    </th>
+                    </th> */}
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {listClients?.map((client: any) => (
-                    <tr key={`Client-item-${client?.email}`}>
+                    <tr key={`Client-item-${client?.id}`}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                          {client?.id}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
+                          {/* <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {client?.first_name} {client?.last_name}
+                            </div>
+                          </div> */}
+
                           <div className="flex-shrink-0 h-10 w-10">
                             <Image
                               className="h-10 w-10 rounded-full"
@@ -124,21 +161,26 @@ const Dashboard = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {client.addresses}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {client.optical_power}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {client?.technical?.first_name}{" "}
+                        {client?.technical?.last_name}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a
+                        {/* <a
                           href="/edit"
                           className="text-indigo-600 hover:text-indigo-900"
                         >
                           Edit
-                        </a>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a
-                          href="/edit"
+                        </a> */}
+                        <button
+                          onClick={() => editClient(client)}
                           className="text-indigo-600 hover:text-indigo-900"
                         >
-                          Delete
-                        </a>
+                          Editar
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -151,5 +193,24 @@ const Dashboard = () => {
     </>
   );
 };
+
+export async function getServerSideProps(context: any) {
+  const session = await getServerSession(context.req, context.res, Nextauth);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/auth/login",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      session: JSON.parse(JSON.stringify(session)),
+    },
+  };
+}
 
 export default Dashboard;
