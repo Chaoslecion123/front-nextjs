@@ -4,33 +4,35 @@ import { useRouter } from "next/router";
 import { Alerts } from "./Alerts";
 
 const LoginPage = () => {
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const codeRef = useRef<HTMLInputElement>(null);
   const [errorText, setErrorText] = useState("");
   const router = useRouter();
-
-  const code = codeRef?.current?.value;
-  const username = usernameRef?.current?.value;
-  const password = passwordRef?.current?.value;
+  const [form, setForm] = useState<any>({});
 
   const { data: dataSession }: any = useSession();
+
+  const handleInput = (e: any) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const submitHandler = async (event: any) => {
     event.preventDefault();
 
     await signIn("credentials", {
-      code,
-      username,
-      password,
+      code: form.code,
+      username: form.username,
+      password: form.password,
       redirect: false,
     });
   };
 
-  console.log("dataSession", dataSession);
-
   useEffect(() => {
-    if (dataSession?.user?.error && (code || username || password)) {
+    if (
+      dataSession?.user?.error &&
+      (form.code || form.username || form.password)
+    ) {
       setErrorText(dataSession?.user?.error);
     }
     if (dataSession?.accessToken) {
@@ -64,7 +66,7 @@ const LoginPage = () => {
                   id="code"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="00012DWWEW"
-                  ref={codeRef}
+                  onChange={handleInput}
                 />
               </div>
               <div>
@@ -80,7 +82,7 @@ const LoginPage = () => {
                   id="username"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="name@company.com"
-                  ref={usernameRef}
+                  onChange={handleInput}
                 />
               </div>
               <div>
@@ -94,7 +96,7 @@ const LoginPage = () => {
                   type="password"
                   name="password"
                   id="password"
-                  ref={passwordRef}
+                  onChange={handleInput}
                   placeholder="••••••••"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
